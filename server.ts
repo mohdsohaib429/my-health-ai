@@ -564,7 +564,7 @@ You MUST respond with a valid JSON object matching this exact TypeScript structu
         temperature: 0.2,
       };
       
-      const modelsToTry = ['gemini-2.5-flash', 'gemini-1.5-flash'];
+      const modelsToTry = ['gemini-2.5-flash', "gemini-2.5-flash"];
       let response: any = null;
       let lastError: any = null;
 
