@@ -565,10 +565,9 @@ You MUST respond with a valid JSON object matching this exact TypeScript structu
       };
       
       const modelsToTry = [
-      'gemini-3.8-flash',
-      'gemini-3.6-flash',
       'gemini-3.5-flash-lite',
       'gemini-3.1-pro',
+      'gemini-3.8-flash',
     ];
 
     let response: any = null;
