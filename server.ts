@@ -565,33 +565,33 @@ You MUST respond with a valid JSON object matching this exact TypeScript structu
       };
       
       const modelsToTry = [
+      'gemini-3.8-flash',
       'gemini-3.6-flash',
-      'gemini-3.5-flash',
-      'gemini-3.1-flash-lite',
-      'gemini-2.5-flash',
-      'gemini-2.0-flash',
+      'gemini-3.5-flash-lite',
+      'gemini-3.1-pro',
     ];
-      let response: any = null;
-      let lastError: any = null;
 
-      for (const model of modelsToTry) {
-        try {
-          response = await ai.models.generateContent({
-            model,
-            contents,
-            config,
-          });
-          if (response?.text) break;
-        } catch (err: any) {
-          console.warn(`Model ${model} failed:`, err?.message || err);
-          lastError = err;
-          await sleep(2000);
-        }
-      }
+    let response: any = null;
+    let lastError: any = null;
 
-      if (!response && lastError) {
-        throw lastError;
+    for (const model of modelsToTry) {
+      try {
+        response = await ai.models.generateContent({
+          model,
+          contents,
+          config,
+        });
+        if (response?.text) break;
+      } catch (err: any) {
+        console.warn(`Model ${model} failed:`, err?.message || err);
+        lastError = err;
+        await sleep(2000);
       }
+    }
+
+    if (!response && lastError) {
+      throw lastError;
+    }
 
       const responseText = response?.text || '{}';
       let parsedResult;
