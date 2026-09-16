@@ -549,20 +549,8 @@ export default function App() {
   };
 
   // Initialize auth on load
+ // Initialize auth on load
   useEffect(() => {
-    // Initial load from storage for default/primary user
-    const initialDataset = loadUserDataset(null);
-    activeUserEmailRef.current = initialDataset.userEmail;
-    setProfile(initialDataset.profile);
-    setFoodDatabase(initialDataset.foodDatabase);
-    setFoodLog(initialDataset.foodLog);
-    setActivityLog(initialDataset.activityLog);
-    setDailySummaries(initialDataset.dailySummaries);
-    setProgressEntries(initialDataset.progressEntries);
-    setSelectedSheet(initialDataset.selectedSheet);
-    setSheetTabs(initialDataset.sheetTabs);
-    setMessages(initialDataset.messages);
-
     initAuth(
       async (currentUser, currentToken) => {
         setUser(currentUser);
@@ -581,13 +569,33 @@ export default function App() {
           setMessages(userDataset.messages);
 
           if (userDataset.selectedSheet && currentToken) {
-            syncSpreadsheetData(currentToken, userDataset.selectedSheet.id);
+            await syncSpreadsheetData(currentToken, userDataset.selectedSheet.id);
+          } else if (currentToken) {
+            try {
+              const files = await searchHealthSpreadsheets(currentToken);
+              if (files.length > 0) {
+                setSelectedSheet(files[0]);
+                await syncSpreadsheetData(currentToken, files[0].id);
+              }
+            } catch (e) {
+              console.warn('Could not auto-fetch spreadsheets:', e);
+            }
           }
         }
       },
       () => {
         setUser(null);
         setToken(null);
+        const primaryDataset = loadUserDataset(null);
+        activeUserEmailRef.current = PRIMARY_USER_EMAIL;
+        setProfile(primaryDataset.profile);
+        setFoodDatabase(primaryDataset.foodDatabase);
+        setFoodLog(primaryDataset.foodLog);
+        setActivityLog(primaryDataset.activityLog);
+        setDailySummaries(primaryDataset.dailySummaries);
+        setProgressEntries(primaryDataset.progressEntries);
+        setSelectedSheet(null);
+        setSheetTabs([]);
       }
     );
   }, [syncSpreadsheetData]);
