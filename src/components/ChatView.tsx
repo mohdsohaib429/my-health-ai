@@ -72,11 +72,11 @@ export const ChatView: React.FC<ChatViewProps> = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  };
+  if (e.key === 'Enter' && !e.shiftKey && window.matchMedia('(pointer: fine)').matches) {
+    e.preventDefault();
+    handleSend();
+  }
+};
 
   const handleImagePick = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -155,12 +155,12 @@ export const ChatView: React.FC<ChatViewProps> = ({
                 <div
                   className={`max-w-[90%] rounded-3xl p-5 text-sm leading-relaxed ${
                     isUser
-                      ? 'bg-stone-900 text-white rounded-br-2xl'
+                      ? 'bg-stone-900 dark:bg-emerald-700 text-white rounded-br-2xl'
                       : 'bg-white text-stone-900 border border-stone-200 shadow-2xs rounded-bl-2xl'
                   }`}
                 >
                   {isUser ? (
-                    <p className="whitespace-pre-wrap">{msg.text}</p>
+                    <p className="whitespace-pre-wrap text-white">{msg.text}</p>
                   ) : (
                     <div className="prose prose-sm prose-stone max-w-none prose-p:my-2 prose-ul:my-2 prose-li:my-1">
                       <Markdown>{msg.text}</Markdown>
