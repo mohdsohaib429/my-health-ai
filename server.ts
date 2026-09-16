@@ -565,10 +565,12 @@ You MUST respond with a valid JSON object matching this exact TypeScript structu
       };
       
       const modelsToTry = [
-  'gemini-3.6-flash',
-  'gemini-3.5-flash',
-  'gemini-3.1-flash-lite',
-];
+      'gemini-3.6-flash',
+      'gemini-3.5-flash',
+      'gemini-3.1-flash-lite',
+      'gemini-2.5-flash',
+      'gemini-2.0-flash',
+    ];
       let response: any = null;
       let lastError: any = null;
 
@@ -583,12 +585,8 @@ You MUST respond with a valid JSON object matching this exact TypeScript structu
         } catch (err: any) {
           console.warn(`Model ${model} failed:`, err?.message || err);
           lastError = err;
-          await sleep(1000);
+          await sleep(2000);
         }
-      }
-
-      if (!response && lastError) {
-        throw lastError;
       }
 
       if (!response && lastError) {
