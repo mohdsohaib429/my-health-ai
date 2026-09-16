@@ -830,42 +830,6 @@ export default function App() {
       let currentDailySummaries = dailySummaries;
       let currentProfile = profile;
       const currentToken = token || (await getAccessToken());
-
-      // If connected to Google Sheets, read the latest Food Log, Activity Log, Progress, Daily Summary, and Profile first
-      if (currentToken && selectedSheet) {
-        try {
-          const [freshFood, freshActivity, freshProgress, freshSummaries, freshProfile] = await Promise.all([
-            fetchFoodLog(currentToken, selectedSheet.id).catch(() => null),
-            fetchActivityLog(currentToken, selectedSheet.id).catch(() => null),
-            fetchProgress(currentToken, selectedSheet.id).catch(() => null),
-            fetchDailySummary(currentToken, selectedSheet.id).catch(() => null),
-            fetchProfileData(currentToken, selectedSheet.id).catch(() => null),
-          ]);
-          if (freshFood && Array.isArray(freshFood)) {
-            currentFoodLog = freshFood;
-            setFoodLog(freshFood);
-          }
-          if (freshActivity && Array.isArray(freshActivity)) {
-            currentActivityLog = freshActivity;
-            setActivityLog(freshActivity);
-          }
-          if (freshProgress && Array.isArray(freshProgress)) {
-            currentProgressEntries = freshProgress;
-            setProgressEntries(freshProgress);
-          }
-          if (freshSummaries && Array.isArray(freshSummaries)) {
-            currentDailySummaries = freshSummaries;
-            setDailySummaries(freshSummaries);
-          }
-          if (freshProfile) {
-            currentProfile = freshProfile;
-            setProfile(freshProfile);
-          }
-        } catch (e) {
-          console.warn('Could not refresh sheets data from Google Sheets:', e);
-        }
-      }
-
       // Check if user requested a full data-integrity check across ALL SIX sheets:
       // Profile, Food Log, Activity Log, Daily Summary, Progress, Food Database.
       // - Inspects ALL six sheets separately.
