@@ -2491,12 +2491,28 @@ export default function App() {
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
-    } catch (error: any) {
+} catch (error: any) {
       console.error('Chat error:', error);
+      const isAuthError =
+        error.message?.toLowerCase().includes('unauthorized') ||
+        error.message?.includes('401');
+
+      if (isAuthError) {
+        setToken(null);
+        setAccessToken(null);
+        setAuthNotice({
+          type: 'warning',
+          message: 'Google Sheets session expired. Click "Connect Google Sheet" above to reconnect.',
+          showHelp: false,
+        });
+      }
+
       const errorMessage: ChatMessage = {
         id: `msg-${Date.now()}-err`,
         sender: 'assistant',
-        text: `Sorry, I encountered an issue: ${error.message || 'Please try again'}.`,
+        text: isAuthError
+          ? '⚠️ Your Google Sheets session expired. Please tap the Google account icon in the header to reconnect, then try your request again.'
+          : `Sorry, I encountered an issue: ${error.message || 'Please try again'}.`,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
       setMessages((prev) => [...prev, errorMessage]);
