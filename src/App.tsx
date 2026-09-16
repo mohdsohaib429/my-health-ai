@@ -1363,7 +1363,7 @@ export default function App() {
           )
         : [];
 
-      const response = await fetch('/api/chat', {
+     const chatPayload = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1395,7 +1395,16 @@ export default function App() {
             pendingDuplicateOffer,
           },
         }),
-      });
+      };
+
+      let response: Response;
+      try {
+        response = await fetch('/api/chat', chatPayload);
+      } catch (firstAttemptErr) {
+        console.warn('First chat request attempt failed, retrying in 2 seconds...', firstAttemptErr);
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        response = await fetch('/api/chat', chatPayload);
+      }
 
       if (!response.ok) {
         const errJson = await response.json().catch(() => ({}));
