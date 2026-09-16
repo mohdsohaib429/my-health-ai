@@ -15,29 +15,30 @@ export const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 provider.addScope('https://www.googleapis.com/auth/spreadsheets');
 provider.addScope('https://www.googleapis.com/auth/drive.readonly');
-// Request offline access prompt to ensure permissions are obtained smoothly
 provider.setCustomParameters({
   prompt: 'select_account',
 });
 
+const TOKEN_KEY = 'mha_google_access_token';
+
 let isSigningIn = false;
-let cachedAccessToken: string | null = null;
+let cachedAccessToken: string | null = localStorage.getItem(TOKEN_KEY);
 
 export const initAuth = (
   onAuthSuccess?: (user: User, token: string) => void,
   onAuthFailure?: () => void
 ) => {
   return onAuthStateChanged(auth, async (user: User | null) => {
-    if (user) {
-      if (cachedAccessToken) {
-        if (onAuthSuccess) onAuthSuccess(user, cachedAccessToken);
-      } else if (!isSigningIn) {
-        // Token isn't in memory yet, prompt sign-in when ready
-        cachedAccessToken = null;
-        if (onAuthFailure) onAuthFailure();
-      }
+    const storedToken = cachedAccessToken || localStorage.getItem(TOKEN_KEY);
+    if (user && storedToken) {
+      cachedAccessToken = storedToken;
+      if (onAuthSuccess) onAuthSuccess(user, storedToken);
+    } else if (user && !storedToken) {
+      // User is authenticated in Firebase, but we need the Google Sheets token
+      if (onAuthFailure) onAuthFailure();
     } else {
       cachedAccessToken = null;
+      localStorage.removeItem(TOKEN_KEY);
       if (onAuthFailure) onAuthFailure();
     }
   });
@@ -64,9 +65,9 @@ export const googleSignIn = async (): Promise<SignInResponse> => {
     }
 
     cachedAccessToken = credential.accessToken;
+    localStorage.setItem(TOKEN_KEY, credential.accessToken);
     return { user: result.user, accessToken: cachedAccessToken };
   } catch (error: any) {
-    // Normal user cancellation or popup closed before completion
     if (
       error?.code === 'auth/popup-closed-by-user' ||
       error?.code === 'auth/cancelled-popup-request'
@@ -109,14 +110,20 @@ export const googleSignIn = async (): Promise<SignInResponse> => {
 };
 
 export const getAccessToken = async (): Promise<string | null> => {
-  return cachedAccessToken;
+  return cachedAccessToken || localStorage.getItem(TOKEN_KEY);
 };
 
 export const setAccessToken = (token: string | null) => {
   cachedAccessToken = token;
+  if (token) {
+    localStorage.setItem(TOKEN_KEY, token);
+  } else {
+    localStorage.removeItem(TOKEN_KEY);
+  }
 };
 
 export const googleSignOut = async () => {
   await signOut(auth);
   cachedAccessToken = null;
+  localStorage.removeItem(TOKEN_KEY);
 };
