@@ -2031,6 +2031,7 @@ export default function App() {
                 console.warn('Background sync of food log postponed:', e);
               }
             }, 1500);
+          }
           // C. Delete Food Log items
           console.log('DIAG_MULTI_DELETE: Items to delete', JSON.stringify(itemsToDelete));
           // Freshly fetch food log and re-resolve row numbers to prevent deletion of incorrect rows due to stale data
