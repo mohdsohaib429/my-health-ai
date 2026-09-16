@@ -564,48 +564,33 @@ You MUST respond with a valid JSON object matching this exact TypeScript structu
         temperature: 0.2,
       };
       
-      const modelsToTry = ['gemini-2.5-flash', "gemini-3.6-flash"];
+const config: any = {
+        systemInstruction,
+        responseMimeType: 'application/json',
+        temperature: 0.2,
+      };
+
+      const modelsToTry = ['gemini-2.5-flash', 'gemini-2.0-flash'];
       let response: any = null;
       let lastError: any = null;
 
-      let quotaExhausted = false;
-
       for (const model of modelsToTry) {
-        let retries = 0;
-        const maxRetries = 5;
-        
-        while (retries <= maxRetries) {
-          try {
-            response = await ai.models.generateContent({
-              model,
-              contents,
-              config,
-            });
-            if (response?.text) break; // success
-          } catch (err: any) {
-            const isRateLimit = err?.error?.code === 429 || err?.status === 429;
-            if (isRateLimit) {
-              // Abort immediately on persistent quota exhaustion
-              lastError = new Error("Gemini API quota exceeded. Please wait a moment before trying again.");
-              quotaExhausted = true;
-              break; // Breaks the while loop
-            }
-            
-            // Retry for transient errors
-            if (retries < maxRetries) {
-              const delay = Math.pow(2, retries) * 2000 + Math.random() * 2000;
-              console.warn(`Transient error on ${model}, retrying in ${Math.round(delay)}ms...`);
-              await sleep(delay);
-              retries++;
-              continue;
-            }
-            
-            console.warn(`Model ${model} attempt failed:`, err?.message || err);
-            lastError = err;
-            break; // Stop retrying this model
-          }
+        try {
+          response = await ai.models.generateContent({
+            model,
+            contents,
+            config,
+          });
+          if (response?.text) break;
+        } catch (err: any) {
+          console.warn(`Model ${model} failed:`, err?.message || err);
+          lastError = err;
+          await sleep(1000);
         }
-        if (response?.text || quotaExhausted) break; // model succeeded or quota exhausted
+      }
+
+      if (!response && lastError) {
+        throw lastError;
       }
 
       if (!response && lastError) {
