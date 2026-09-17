@@ -662,6 +662,19 @@ You MUST respond with a valid JSON object matching this exact TypeScript structu
             item.calories = expectedFromMacros;
           }
         }
+        // Automatic Meal-Time Enforcer (prevents late meals defaulting to Breakfast)
+        const now = new Date();
+        // Uses India Standard Time (UTC+5:30)
+        const istHours = (now.getUTCHours() + 5 + Math.floor((now.getUTCMinutes() + 30) / 60)) % 24;
+        
+        if (!item.meal || item.meal.toLowerCase() === 'breakfast') {
+          if (istHours >= 19 || istHours < 4) {
+            if (typeof message === 'string' && !message.toLowerCase().includes('breakfast')) {
+              console.log(`[Meal Guard] Correcting '${item.meal}' to 'Dinner' (IST Hour: ${istHours})`);
+              item.meal = 'Dinner';
+            }
+          }
+        }
       }
     }
 
