@@ -628,10 +628,9 @@ You MUST respond with a valid JSON object matching this exact TypeScript structu
           };
         }
       }
-    // Server-side deterministic arithmetic guard for food logs
+    // Server-side deterministic arithmetic & text cleaner guard
     if (parsedResult && Array.isArray(parsedResult.foodItems)) {
       for (const item of parsedResult.foodItems) {
-        // Strip non-numeric characters so strings like "16.0g" parse cleanly
         const cleanNum = (val: any) => {
           if (typeof val === 'number') return val;
           if (typeof val === 'string') {
@@ -644,28 +643,45 @@ You MUST respond with a valid JSON object matching this exact TypeScript structu
         const p = cleanNum(item.protein);
         const c = cleanNum(item.carbs);
         const f = cleanNum(item.fat);
+        const currentCals = cleanNum(item.calories);
 
-        // Atwater formula: (4 * P) + (4 * C) + (9 * F)
+        // Calculate calories directly from Atwater factors: (4 * P) + (4 * C) + (9 * F)
         const expectedFromMacros = Math.round((p * 4) + (c * 4) + (f * 9));
 
         if (expectedFromMacros > 0) {
-          const currentCals = cleanNum(item.calories);
-          // If the AI's calorie token deviates by more than 10 kcal, enforce the math
-          if (Math.abs(currentCals - expectedFromMacros) > 10) {
-            console.log(`[Math Guard] Correcting ${item.name || item.food}: AI had ${currentCals} kcal, recalculated to ${expectedFromMacros} kcal from (${p}P, ${c}C, ${f}F)`);
+          // If calorie deviates by more than 15% or 10 kcal from macros, enforce macro truth
+          if (Math.abs(currentCals - expectedFromMacros) > Math.max(10, expectedFromMacros * 0.15)) {
+            console.log(`[Math Guard] Overriding ${item.name || item.food}: AI had ${currentCals} kcal, strictly enforced ${expectedFromMacros} kcal`);
             item.calories = expectedFromMacros;
           }
         }
       }
     }
-      // Strip conversational intros and audit boilerplate from the reply text
+
+    // Clean conversational reply: strip raw JSON artifacts, LaTeX, and internal boilerplate
     if (parsedResult && typeof parsedResult.reply === 'string') {
-      parsedResult.reply = parsedResult.reply
-        .replace(/^I have logged.*?for your meal\.\s*/i, '')
-        .replace(/•\s*Recorded Date Confirmed:[\s\S]*$/i, '')
+      let cleanReply = parsedResult.reply;
+
+      // 1. If reply is accidentally a stringified JSON object, extract just the reply field
+      if (cleanReply.trim().startsWith('{') && cleanReply.includes('"reply":')) {
+        try {
+          const inner = JSON.parse(cleanReply);
+          if (inner.reply) cleanReply = inner.reply;
+        } catch (_) {}
+      }
+
+      // 2. Strip raw LaTeX markers ($...$, \times, \mathbf, \text) so chat stays completely clean
+      cleanReply = cleanReply
+        .replace(/\\times/g, '×')
+        .replace(/\\mathbf\{([^}]+)\}/g, '$1')         .replace(/\\text\{([^}]+)\}/g, '$1')
+        .replace(/\$+/g, '')
+        .replace(/\n\*Recorded Date Confirmed:[\s\S]*$/i, '')
         .trim();
+
+      parsedResult.reply = cleanReply;
     }
-      res.json(parsedResult);
+
+    res.json(parsedResult);
     } catch (error: any) {
       console.error('API /api/chat error:', error);
       res.status(500).json({
