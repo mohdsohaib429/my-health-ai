@@ -109,7 +109,7 @@ export const ChatView: React.FC<ChatViewProps> = ({
   ];
 
   return (
-    <div className="flex flex-col h-[calc(100vh-140px)] max-w-4xl mx-auto pb-16">
+    <div className="flex flex-col h-[100dvh] max-w-4xl mx-auto pb-20 sm:pb-24">
       {/* Chat Messages List */}
       <div className="flex-1 overflow-y-auto px-3 py-6 space-y-6">
         {messages.length === 0 ? (
