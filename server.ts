@@ -625,7 +625,33 @@ You MUST respond with a valid JSON object matching this exact TypeScript structu
           };
         }
       }
+     // Server-side deterministic arithmetic guard for food logs
+    if (parsedResult && Array.isArray(parsedResult.foodItems)) {
+      for (const item of parsedResult.foodItems) {
+        let grams = 0;
+        if (typeof item.quantity === 'number') {
+          grams = item.quantity;
+        } else if (typeof item.quantity === 'string') {
+          const match = item.quantity.match(/([\d.]+)\s*(g|gram|ml)/i);
+          if (match) grams = parseFloat(match[1]);
+        }
 
+        if (grams > 0) {
+          const p = Number(item.protein) || 0;
+          const c = Number(item.carbs) || 0;
+          const f = Number(item.fat) || 0;
+
+          // Atwater 4-4-9 macro calculation: (4*P + 4*C + 9*F)
+          const expectedFromMacros = Math.round((p * 4) + (c * 4) + (f * 9));
+
+          // If the AI hallucinated an erroneous calorie count
+          if (expectedFromMacros > 0 && Math.abs((item.calories || 0) - expectedFromMacros) > 15) {
+            console.log(`[Math Correction] Fixed ${item.name || item.food}: AI guessed ${item.calories} kcal, corrected to ${expectedFromMacros} kcal based on macros`);
+            item.calories = expectedFromMacros;
+          }
+        }
+      }
+    }
       res.json(parsedResult);
     } catch (error: any) {
       console.error('API /api/chat error:', error);
