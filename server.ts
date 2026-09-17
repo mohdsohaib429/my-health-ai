@@ -625,28 +625,31 @@ You MUST respond with a valid JSON object matching this exact TypeScript structu
           };
         }
       }
-     // Server-side deterministic arithmetic guard for food logs
+    // Server-side deterministic arithmetic guard for food logs
     if (parsedResult && Array.isArray(parsedResult.foodItems)) {
       for (const item of parsedResult.foodItems) {
-        let grams = 0;
-        if (typeof item.quantity === 'number') {
-          grams = item.quantity;
-        } else if (typeof item.quantity === 'string') {
-          const match = item.quantity.match(/([\d.]+)\s*(g|gram|ml)/i);
-          if (match) grams = parseFloat(match[1]);
-        }
+        // Strip non-numeric characters so strings like "16.0g" parse cleanly
+        const cleanNum = (val: any) => {
+          if (typeof val === 'number') return val;
+          if (typeof val === 'string') {
+            const m = val.match(/[\d.]+/);
+            return m ? parseFloat(m[0]) : 0;
+          }
+          return 0;
+        };
 
-        if (grams > 0) {
-          const p = Number(item.protein) || 0;
-          const c = Number(item.carbs) || 0;
-          const f = Number(item.fat) || 0;
+        const p = cleanNum(item.protein);
+        const c = cleanNum(item.carbs);
+        const f = cleanNum(item.fat);
 
-          // Atwater 4-4-9 macro calculation: (4*P + 4*C + 9*F)
-          const expectedFromMacros = Math.round((p * 4) + (c * 4) + (f * 9));
+        // Atwater formula: (4 * P) + (4 * C) + (9 * F)
+        const expectedFromMacros = Math.round((p * 4) + (c * 4) + (f * 9));
 
-          // If the AI hallucinated an erroneous calorie count
-          if (expectedFromMacros > 0 && Math.abs((item.calories || 0) - expectedFromMacros) > 15) {
-            console.log(`[Math Correction] Fixed ${item.name || item.food}: AI guessed ${item.calories} kcal, corrected to ${expectedFromMacros} kcal based on macros`);
+        if (expectedFromMacros > 0) {
+          const currentCals = cleanNum(item.calories);
+          // If the AI's calorie token deviates by more than 10 kcal, enforce the math
+          if (Math.abs(currentCals - expectedFromMacros) > 10) {
+            console.log(`[Math Guard] Correcting ${item.name || item.food}: AI had ${currentCals} kcal, recalculated to ${expectedFromMacros} kcal from (${p}P, ${c}C, ${f}F)`);
             item.calories = expectedFromMacros;
           }
         }
