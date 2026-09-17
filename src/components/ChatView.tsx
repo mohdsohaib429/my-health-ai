@@ -308,7 +308,7 @@ export const ChatView: React.FC<ChatViewProps> = ({
       </div>
 
      {/* Input Box Area */}
-<div className="p-2 sm:p-3 bg-white border-t border-stone-200 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+    <div className="sticky bottom-0 z-20 bg-white dark:bg-[#151d18] border-t border-stone-200 dark:border-stone-800 p-2 sm:p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
         {/* Pending Duplicate Entry Bar */}
         {pendingDuplicateOffer && (
           <div className="mb-2.5 p-2.5 bg-amber-50 border border-amber-200 rounded-xl flex items-center justify-between gap-2 shadow-2xs">
