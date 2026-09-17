@@ -658,6 +658,13 @@ You MUST respond with a valid JSON object matching this exact TypeScript structu
         }
       }
     }
+      // Strip conversational intros and audit boilerplate from the reply text
+    if (parsedResult && typeof parsedResult.reply === 'string') {
+      parsedResult.reply = parsedResult.reply
+        .replace(/^I have logged.*?for your meal\.\s*/i, '')
+        .replace(/•\s*Recorded Date Confirmed:[\s\S]*$/i, '')
+        .trim();
+    }
       res.json(parsedResult);
     } catch (error: any) {
       console.error('API /api/chat error:', error);
