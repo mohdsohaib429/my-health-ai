@@ -109,7 +109,7 @@ export const ChatView: React.FC<ChatViewProps> = ({
   ];
 
   return (
-    <div className="flex flex-col h-[100dvh] max-w-4xl mx-auto pb-20 sm:pb-24">
+   <div className="flex flex-col h-[100dvh] max-w-4xl mx-auto">
       {/* Chat Messages List */}
       <div className="flex-1 overflow-y-auto px-3 py-6 space-y-6">
         {messages.length === 0 ? (
@@ -307,8 +307,8 @@ export const ChatView: React.FC<ChatViewProps> = ({
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Box Area */}
-      <div className="p-2 sm:p-3 bg-white border-t border-stone-200">
+     {/* Input Box Area */}
+<div className="p-2 sm:p-3 bg-white border-t border-stone-200 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
         {/* Pending Duplicate Entry Bar */}
         {pendingDuplicateOffer && (
           <div className="mb-2.5 p-2.5 bg-amber-50 border border-amber-200 rounded-xl flex items-center justify-between gap-2 shadow-2xs">
