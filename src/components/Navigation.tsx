@@ -28,7 +28,7 @@ export const Navigation: React.FC<NavigationProps> = ({
   ];
 
   return (
-    <nav id="mobile-navigation" className="fixed bottom-4 left-4 right-4 md:bottom-0 md:left-0 md:right-0 z-30 bg-white/60 backdrop-blur-[10px] md:backdrop-blur-none border border-stone-200/60 shadow-xl rounded-full md:rounded-none md:border-t md:border-b-0 md:border-x-0 md:bg-white/95 md:border-stone-200 md:shadow-lg transition-colors duration-300">
+    <nav id="mobile-navigation" className={`fixed bottom-4 left-4 right-4 md:bottom-0 md:left-0 md:right-0 z-30 bg-white/60 backdrop-blur-[10px] md:backdrop-blur-none border border-stone-200/60 shadow-xl rounded-full md:rounded-none md:border-t md:border-b-0 md:border-x-0 md:bg-white/95 md:border-stone-200 md:shadow-lg transition-all duration-200 ${activeTab === 'chat' ? 'hidden md:block' : 'block'}`}>
       <div className="max-w-md mx-auto px-4 flex items-center justify-around pb-1">
         {tabs.map((tab) => {
           const Icon = tab.icon;
