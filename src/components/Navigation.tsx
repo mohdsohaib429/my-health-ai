@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { LayoutDashboard, MessageSquare, Clock, TrendingUp, UserCheck } from 'lucide-react';
 
 export type NavTab = 'dashboard' | 'chat' | 'history' | 'progress' | 'profile';
@@ -14,6 +14,21 @@ export const Navigation: React.FC<NavigationProps> = ({
   onChangeTab,
   pendingOffersCount = 0,
 }) => {
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+
+  useEffect(() => {
+    const handleViewportChange = () => {
+      if (window.visualViewport) {
+        // When the software keyboard opens on mobile, visualViewport.height shrinks significantly
+        const keyboardActive = window.visualViewport.height < window.innerHeight - 120;
+        setIsKeyboardOpen(keyboardActive);
+      }
+    };
+
+    window.visualViewport?.addEventListener('resize', handleViewportChange);
+    return () => window.visualViewport?.removeEventListener('resize', handleViewportChange);
+  }, []);
+
   const tabs = [
     { id: 'dashboard' as NavTab, label: 'Today', icon: LayoutDashboard },
     {
@@ -27,8 +42,16 @@ export const Navigation: React.FC<NavigationProps> = ({
     { id: 'profile' as NavTab, label: 'Profile', icon: UserCheck },
   ];
 
+  // If the keyboard is up while in chat mode, hide the navigation completely
+  if (activeTab === 'chat' && isKeyboardOpen) {
+    return null;
+  }
+
   return (
-   <nav id="mobile-navigation" className="fixed bottom-4 left-4 right-4 md:bottom-0 md:left-0 md:right-0 z-30 bg-white/60 backdrop-blur-[10px] md:backdrop-blur-none border border-stone-200/60 shadow-xl rounded-full md:rounded-none md:border-t md:border-b-0 md:border-x-0 md:bg-white/95 md:border-stone-200 md:shadow-lg transition-all duration-200 block">
+    <nav
+      id="mobile-navigation"
+      className="fixed bottom-4 left-4 right-4 md:bottom-0 md:left-0 md:right-0 z-30 bg-white/60 dark:bg-[#151d18]/80 backdrop-blur-[10px] md:backdrop-blur-none border border-stone-200/60 dark:border-stone-800 shadow-xl rounded-full md:rounded-none md:border-t md:border-b-0 md:border-x-0 md:bg-white/95 md:dark:bg-[#151d18] md:border-stone-200 md:shadow-lg transition-all duration-200 block"
+    >
       <div className="max-w-md mx-auto px-4 flex items-center justify-around pb-1">
         {tabs.map((tab) => {
           const Icon = tab.icon;
@@ -53,7 +76,9 @@ export const Navigation: React.FC<NavigationProps> = ({
                   </span>
                 )}
               </div>
-              <span className={`text-[11px] mt-0.5 tracking-tight ${isActive ? 'dark:text-[#E8F3EE]' : ''}`}>{tab.label}</span>
+              <span className={`text-[11px] mt-0.5 tracking-tight ${isActive ? 'dark:text-[#E8F3EE]' : ''}`}>
+                {tab.label}
+              </span>
               {isActive && (
                 <div className="w-4 h-0.5 bg-emerald-700 dark:bg-[#10B981] rounded-full mt-0.5" />
               )}
