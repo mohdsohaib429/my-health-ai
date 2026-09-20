@@ -16,11 +16,13 @@ export const Navigation: React.FC<NavigationProps> = ({
 }) => {
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
 
-  useEffect(() => {
+   useEffect(() => {
+    const initialHeight = window.screen.height;
+
     const handleViewportChange = () => {
       if (window.visualViewport) {
-        // When the software keyboard opens on mobile, visualViewport.height shrinks significantly
-        const keyboardActive = window.visualViewport.height < window.innerHeight - 120;
+        // Compare visualViewport directly to physical screen height
+        const keyboardActive = window.visualViewport.height < initialHeight * 0.75;
         setIsKeyboardOpen(keyboardActive);
       }
     };
