@@ -307,30 +307,30 @@ export const ChatView: React.FC<ChatViewProps> = ({
         <div ref={messagesEndRef} />
       </div>
 
-     {/* Input Box Area */}
-   <div className="sticky bottom-0 z-20 bg-white dark:bg-[#151d18] border-t border-stone-200 dark:border-stone-800 p-2 sm:p-3 pb-24 md:pb-3">
-  {/* Pending Duplicate Entry Bar */}
+    {/* Input Box Area */}
+      <div className="sticky bottom-0 z-20 bg-white/80 dark:bg-[#141A17]/90 backdrop-blur-md border-t border-stone-200/80 dark:border-stone-800/80 px-3 pt-2 pb-20 md:pb-3">
+        {/* Pending Duplicate Entry Bar */}
         {pendingDuplicateOffer && (
-          <div className="mb-2.5 p-2.5 bg-amber-50 border border-amber-200 rounded-xl flex items-center justify-between gap-2 shadow-2xs">
-            <div className="flex items-center gap-2 text-xs text-amber-900">
-              <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0" />
-              <span>
-                Matching entry exists for <strong>{pendingDuplicateOffer.date}</strong>. Add it again?
+          <div className="mb-2 p-2.5 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 rounded-2xl flex items-center justify-between gap-2 shadow-2xs">
+            <div className="flex items-center gap-2 text-xs text-amber-900 dark:text-amber-200">
+              <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+              <span className="truncate">
+                Entry exists for <strong>{pendingDuplicateOffer.date}</strong>. Add again?
               </span>
             </div>
-            <div className="flex items-center gap-2 flex-shrink-0">
+            <div className="flex items-center gap-1.5 flex-shrink-0">
               <button
                 type="button"
                 onClick={() => onSendMessage('Yes, add it again')}
                 className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg shadow-2xs transition-colors flex items-center gap-1"
               >
                 <Check className="w-3.5 h-3.5" />
-                <span>Yes, Add</span>
+                <span>Add</span>
               </button>
               <button
                 type="button"
                 onClick={() => onSendMessage('No, cancel')}
-                className="px-2.5 py-1 bg-stone-200 hover:bg-stone-300 text-stone-700 text-xs font-medium rounded-lg transition-colors"
+                className="px-2.5 py-1 bg-stone-200 dark:bg-stone-800 hover:bg-stone-300 text-stone-700 dark:text-stone-300 text-xs font-medium rounded-lg transition-colors"
               >
                 Cancel
               </button>
@@ -340,33 +340,34 @@ export const ChatView: React.FC<ChatViewProps> = ({
 
         {/* Selected Image Preview */}
         {selectedImage && (
-          <div className="mb-2 p-2 bg-stone-50 border border-stone-200 rounded-xl flex items-center justify-between">
+          <div className="mb-2 p-2 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl flex items-center justify-between">
             <div className="flex items-center gap-2">
               <img
                 src={selectedImage.previewUrl}
                 alt="Meal preview"
-                className="w-12 h-12 object-cover rounded-lg border border-stone-200"
+                className="w-10 h-10 object-cover rounded-lg border border-stone-200 dark:border-stone-700"
               />
               <div>
-                <span className="text-xs font-semibold text-stone-800">
+                <span className="text-xs font-semibold text-stone-800 dark:text-stone-200 block truncate max-w-[180px]">
                   {selectedImage.file.name}
                 </span>
-                <span className="text-[10px] text-emerald-600 block">
-                  Photo meal estimation ready
+                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 block">
+                  Photo ready to estimate
                 </span>
               </div>
             </div>
             <button
               onClick={() => setSelectedImage(null)}
-              className="p-1 text-stone-400 hover:text-stone-700 rounded-md"
+              className="p-1 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 rounded-md"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
         )}
 
-        <div className="flex items-end gap-2">
-          {/* Photo upload button (future photo feature architecture) */}
+        {/* Sleek Capsule Bar */}
+        <div className="flex items-center gap-2 bg-stone-100/90 dark:bg-[#1E2622] border border-stone-200/90 dark:border-stone-700/60 rounded-full px-2 py-1 shadow-2xs focus-within:ring-2 focus-within:ring-emerald-500/30 focus-within:border-emerald-600/60 transition-all">
+          {/* Photo Button */}
           <input
             ref={fileInputRef}
             type="file"
@@ -378,41 +379,36 @@ export const ChatView: React.FC<ChatViewProps> = ({
             id="chat-photo-button"
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="p-2.5 text-stone-500 hover:text-emerald-600 hover:bg-stone-100 rounded-xl transition-colors flex-shrink-0"
-            title="Attach a photo of your meal"
+            className="p-2 text-stone-400 hover:text-emerald-600 dark:text-stone-400 dark:hover:text-emerald-400 rounded-full hover:bg-stone-200/50 dark:hover:bg-stone-800/50 transition-colors flex-shrink-0"
+            title="Attach photo"
           >
-            <Camera className="w-5 h-5" />
+            <Camera className="w-4 h-4" />
           </button>
 
-          {/* Text Input */}
-          <div className="flex-1 bg-stone-50 border border-stone-200 rounded-xl focus-within:border-emerald-600 focus-within:ring-1 focus-within:ring-emerald-600 transition-all">
-            <textarea
-              id="chat-input-textarea"
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="e.g. 2 eggs, 2 rotis and milk / Walked 30 min..."
-              rows={1}
-              className="w-full bg-transparent px-3 py-2.5 text-xs sm:text-sm text-stone-900 placeholder:text-stone-400 focus:outline-hidden resize-none max-h-24"
-            />
-          </div>
+          {/* Auto-sizing Single-Row Textarea */}
+          <textarea
+            id="chat-input-textarea"
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Log food, activity, or ask anything..."
+            rows={1}
+            className="flex-1 bg-transparent py-2 text-xs sm:text-sm text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-none resize-none max-h-24 leading-snug"
+          />
 
-          {/* Send Button */}
+          {/* Circular Send Button */}
           <button
             id="chat-send-button"
             onClick={handleSend}
             disabled={(!inputText.trim() && !selectedImage) || isLoading}
-            className="p-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 disabled:hover:bg-emerald-600 text-white rounded-xl shadow-sm transition-all flex-shrink-0 active:scale-95"
+            className="p-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-30 disabled:hover:bg-emerald-600 text-white rounded-full shadow-xs transition-all flex-shrink-0 active:scale-95"
           >
-            <Send className="w-5 h-5" />
+            <Send className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="flex items-center justify-between text-[10px] text-stone-600 px-1 mt-1.5">
-          <span>Personal health assistant • Estimates for tracking only</span>
-          <span className="hidden sm:block">Press Enter to send</span>
+        {/* Compact Micro-footer */}
+        <div className="text-center text-[10px] text-stone-400 dark:text-stone-500 mt-1">
+          <span>AI estimates for personal tracking</span>
         </div>
       </div>
-    </div>
-  );
-};
