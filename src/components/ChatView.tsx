@@ -46,6 +46,18 @@ export const ChatView: React.FC<ChatViewProps> = ({
     base64: string;
     mimeType: string;
   } | null>(null);
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+
+useEffect(() => {
+  const handleResize = () => {
+    if (window.visualViewport) {
+      const open = window.visualViewport.height < window.innerHeight - 100;
+      setIsKeyboardOpen(open);
+    }
+  };
+  window.visualViewport?.addEventListener('resize', handleResize);
+  return () => window.visualViewport?.removeEventListener('resize', handleResize);
+}, []);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -308,8 +320,10 @@ export const ChatView: React.FC<ChatViewProps> = ({
       </div>
 
     {/* Input Box Area */}
-      <div className="sticky bottom-0 z-20 bg-white/85 dark:bg-[#141A17]/90 backdrop-blur-md border-t border-stone-200/70 dark:border-stone-800/80 px-3 pt-2 pb-20 md:pb-3 transition-colors">
-        {/* Pending Duplicate Entry Bar */}
+    <div className={`sticky bottom-0 z-20 bg-white/90 dark:bg-[#141A17]/95 backdrop-blur-md border-t border-stone-200/70 dark:border-stone-800/80 px-3 pt-2 transition-all duration-150 ${
+     isKeyboardOpen ? 'pb-2' : 'pb-20 md:pb-3'
+     }`}>
+      {/* Pending Duplicate Entry Bar */}
         {pendingDuplicateOffer && (
           <div className="mb-2 p-2.5 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 rounded-2xl flex items-center justify-between gap-2 shadow-2xs">
             <div className="flex items-center gap-2 text-xs text-amber-900 dark:text-amber-200">
