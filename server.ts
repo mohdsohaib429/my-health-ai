@@ -635,7 +635,7 @@ You MUST respond with a valid JSON object matching this exact TypeScript structu
           };
         }
       }
-    // Server-side deterministic arithmetic & text cleaner guard
+    // 1. Deterministic arithmetic & Atwater enforcer for all logged food items
     if (parsedResult && Array.isArray(parsedResult.foodItems)) {
       for (const item of parsedResult.foodItems) {
         const cleanNum = (val: any) => {
@@ -656,15 +656,15 @@ You MUST respond with a valid JSON object matching this exact TypeScript structu
         const expectedFromMacros = Math.round((p * 4) + (c * 4) + (f * 9));
 
         if (expectedFromMacros > 0) {
-          // If calorie deviates by more than 15% or 10 kcal from macros, enforce macro truth
-          if (Math.abs(currentCals - expectedFromMacros) > Math.max(10, expectedFromMacros * 0.15)) {
+          // If the calorie token is more than 10% off or deviates by > 8 kcal, strictly enforce macro truth
+          if (Math.abs(currentCals - expectedFromMacros) > Math.max(8, expectedFromMacros * 0.10)) {
             console.log(`[Math Guard] Overriding ${item.name || item.food}: AI had ${currentCals} kcal, strictly enforced ${expectedFromMacros} kcal`);
             item.calories = expectedFromMacros;
           }
         }
+
         // Automatic Meal-Time Enforcer (prevents late meals defaulting to Breakfast)
         const now = new Date();
-        // Uses India Standard Time (UTC+5:30)
         const istHours = (now.getUTCHours() + 5 + Math.floor((now.getUTCMinutes() + 30) / 60)) % 24;
         
         if (!item.meal || item.meal.toLowerCase() === 'breakfast') {
@@ -678,25 +678,35 @@ You MUST respond with a valid JSON object matching this exact TypeScript structu
       }
     }
 
-    // Clean conversational reply: strip raw JSON artifacts, LaTeX, and internal boilerplate
-    if (parsedResult && typeof parsedResult.reply === 'string') {
-      let cleanReply = parsedResult.reply;
+    // 2. Comprehensive Reply Sanitizer: Eliminates JSON leaks, stray LaTeX, and decimal noise
+    if (parsedResult) {
+      // If the AI returned a JSON string inside the reply or the raw response itself leaked
+      let cleanReply = typeof parsedResult.reply === 'string' ? parsedResult.reply : '';
 
-      // 1. If reply is accidentally a stringified JSON object, extract just the reply field
-      if (cleanReply.trim().startsWith('{') && cleanReply.includes('"reply":')) {
+      // If the reply is an unparsed stringified JSON (e.g. {"intent": "NUTRITION_QUERY", "reply": "..."})
+      if (cleanReply.trim().startsWith('{') && cleanReply.includes('"reply"')) {
         try {
-          const inner = JSON.parse(cleanReply);
-          if (inner.reply) cleanReply = inner.reply;
+          const match = cleanReply.match(/"reply"\s*:\s*"([\s\S]*?)"(?=\s*,\s*"[a-zA-Z]+"|\s*\})/);
+          if (match && match[1]) {
+            cleanReply = match[1].replace(/\\n/g, '\n').replace(/\\"/g, '"');
+          } else {
+            const inner = JSON.parse(cleanReply);
+            if (inner.reply) cleanReply = inner.reply;
+          }
         } catch (_) {}
       }
 
-      // 2. Strip raw LaTeX markers ($...$, \times, \mathbf, \text) so chat stays completely clean
+      // Strip raw LaTeX formatting tokens
       cleanReply = cleanReply
         .replace(/\\times/g, '×')
         .replace(/\\mathbf\{([^}]+)\}/g, '$1')         .replace(/\\text\{([^}]+)\}/g, '$1')
         .replace(/\$+/g, '')
-        .replace(/\n\*Recorded Date Confirmed:[\s\S]*$/i, '')
+        // Clean out internal audit confirmation text from bubble
+        .replace(/\n\*?Recorded Date Confirmed:[\s\S]*$/i, '')
         .trim();
+
+      // Clean ugly multi-digit floating decimals in calorie summaries (e.g. 1791.375 -> 1791)
+      cleanReply = cleanReply.replace(/(\d+)\.\d+\s*kcal/gi, '$1 kcal');
 
       parsedResult.reply = cleanReply;
     }
