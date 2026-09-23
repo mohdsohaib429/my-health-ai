@@ -92,8 +92,7 @@ export const ProgressView: React.FC<ProgressViewProps> = ({
         </div>
         <button
           onClick={() => setShowInput(!showInput)}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold rounded-xl shadow-sm transition-all active:scale-95"
-        >
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl shadow-sm transition-all duration-150 active:scale-95"        >
           <PlusCircle className="w-3.5 h-3.5" />
           <span>{showInput ? 'Cancel' : 'Log Weight'}</span>
         </button>
