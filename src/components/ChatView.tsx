@@ -155,8 +155,8 @@ export const ChatView: React.FC<ChatViewProps> = ({
               </div>
             </div>
           </div>
-        ) : (
-          useMemo(() => messages.map((msg) => {
+       ) : (
+          messages.map((msg) => {
             const isUser = msg.sender === 'user';
 
             return (
@@ -306,10 +306,9 @@ export const ChatView: React.FC<ChatViewProps> = ({
                   {msg.timestamp}
                 </span>
             </div>
-      );
-     }, [messages, isLoading])
-    )}
-
+             );
+          })
+        )}
         {isLoading && (
           <div className="flex items-center gap-2 p-3 bg-white border border-stone-200 rounded-2xl max-w-[140px] text-xs text-stone-500 shadow-2xs">
             <Sparkles className="w-4 h-4 text-emerald-600 animate-spin" />
@@ -347,7 +346,7 @@ export const ChatView: React.FC<ChatViewProps> = ({
               <button
                 type="button"
                 onClick={() => onSendMessage('No, cancel')}
-                className="px-3 py-1 bg-stone-200 dark:bg-stone-800 hover:bg-stone-300 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 text-xs font-medium rounded-lg transition-colors"
+                className="px-2.5 py-1 bg-stone-200 dark:bg-stone-800 hover:bg-stone-300 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 text-xs font-medium rounded-lg transition-colors"
               >
                 Cancel
               </button>
@@ -410,10 +409,10 @@ export const ChatView: React.FC<ChatViewProps> = ({
             onKeyDown={handleKeyDown}
             placeholder="Log food, activity, or ask anything..."
             rows={1}
-            className="flex-1 bg-transparent px-1 py-1 text-sm sm:text-base text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-none resize-none min-h-[48px] max-h-36 leading-normal transition-colors"
+            className="flex-1 bg-transparent px-1 py-1 text-sm sm:text-base text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-none resize-none min-h-[48px] max-h-36 leading-normal"
           />
 
-          {/* Fluid Send Button */}
+          {/* Fluid Action Button */}
           <button
             id="chat-send-button"
             onClick={handleSend}
