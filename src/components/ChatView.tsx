@@ -320,17 +320,17 @@ export const ChatView: React.FC<ChatViewProps> = ({
         <div ref={messagesEndRef} />
       </div>
 
-    {/* Input Box Area */}
+     {/* Input Box Area */}
       <div
-        className={`sticky bottom-0 z-20 bg-white/95 dark:bg-[#141A17]/95 backdrop-blur-md border-t border-stone-200/70 dark:border-stone-800/80 px-3 pt-1.5 transition-all duration-150 ${
-          isKeyboardOpen ? 'pb-1.5' : 'pb-20 md:pb-3'
+        className={`sticky bottom-0 z-20 bg-white dark:bg-[#141A17] border-t border-stone-200 dark:border-stone-800 px-4 pt-2.5 ${
+          isKeyboardOpen ? 'pb-2' : 'pb-20 md:pb-4'
         }`}
       >
         {/* Pending Duplicate Entry Bar */}
         {pendingDuplicateOffer && (
-          <div className="mb-1.5 p-2 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 rounded-xl flex items-center justify-between gap-2 shadow-2xs">
-            <div className="flex items-center gap-1.5 text-xs text-amber-900 dark:text-amber-200">
-              <AlertTriangle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+          <div className="mb-2 p-2.5 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 rounded-2xl flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 text-xs text-amber-900 dark:text-amber-200">
+              <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0" />
               <span className="truncate">
                 Entry exists for <strong>{pendingDuplicateOffer.date}</strong>. Add again?
               </span>
@@ -339,15 +339,15 @@ export const ChatView: React.FC<ChatViewProps> = ({
               <button
                 type="button"
                 onClick={() => onSendMessage('Yes, add it again')}
-                className="px-2 py-0.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-md shadow-2xs transition-colors flex items-center gap-1"
+                className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg"
               >
-                <Check className="w-3 h-3" />
+                <Check className="w-3.5 h-3.5" />
                 <span>Add</span>
               </button>
               <button
                 type="button"
                 onClick={() => onSendMessage('No, cancel')}
-                className="px-2 py-0.5 bg-stone-200 dark:bg-stone-800 hover:bg-stone-300 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 text-xs font-medium rounded-md transition-colors"
+                className="px-2.5 py-1 bg-stone-200 dark:bg-stone-800 hover:bg-stone-300 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 text-xs font-medium rounded-lg"
               >
                 Cancel
               </button>
@@ -357,19 +357,19 @@ export const ChatView: React.FC<ChatViewProps> = ({
 
         {/* Selected Image Preview */}
         {selectedImage && (
-          <div className="mb-1.5 p-1.5 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl flex items-center justify-between">
+          <div className="mb-2 p-2 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl flex items-center justify-between">
             <div className="flex items-center gap-2">
               <img
                 src={selectedImage.previewUrl}
                 alt="Meal preview"
-                className="w-8 h-8 object-cover rounded-md border border-stone-200 dark:border-stone-700"
+                className="w-10 h-10 object-cover rounded-lg border border-stone-200 dark:border-stone-700"
               />
               <div>
-                <span className="text-xs font-semibold text-stone-800 dark:text-stone-200 block truncate max-w-[160px]">
+                <span className="text-xs font-semibold text-stone-800 dark:text-stone-200 block truncate max-w-[180px]">
                   {selectedImage.file.name}
                 </span>
-                <span className="text-[9px] text-emerald-600 dark:text-emerald-400 block">
-                  Photo ready
+                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 block">
+                  Photo ready to estimate
                 </span>
               </div>
             </div>
@@ -377,13 +377,13 @@ export const ChatView: React.FC<ChatViewProps> = ({
               onClick={() => setSelectedImage(null)}
               className="p-1 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 rounded-md"
             >
-              <X className="w-3.5 h-3.5" />
+              <X className="w-4 h-4" />
             </button>
           </div>
         )}
 
-        {/* Slim Capsule Pill */}
-        <div className="flex items-center gap-1 bg-stone-100/90 dark:bg-[#1C2420] border border-stone-200/90 dark:border-stone-700/60 rounded-full px-2 py-0.5 shadow-2xs focus-within:ring-1 focus-within:ring-emerald-500/30 focus-within:border-emerald-600/50 transition-all">
+        {/* Gemini-Style Spacious Pill */}
+        <div className="flex items-center gap-2 bg-[#f0f4f1] dark:bg-[#1C2420] border border-stone-300/80 dark:border-stone-700/80 rounded-[28px] px-3 py-2 shadow-xs focus-within:ring-2 focus-within:ring-emerald-500/30 focus-within:border-emerald-600/60">
           {/* Photo upload button */}
           <input
             ref={fileInputRef}
@@ -396,13 +396,13 @@ export const ChatView: React.FC<ChatViewProps> = ({
             id="chat-photo-button"
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="p-1.5 text-stone-400 hover:text-emerald-600 dark:text-stone-400 dark:hover:text-emerald-400 rounded-full hover:bg-stone-200/60 dark:hover:bg-stone-800/60 transition-colors flex-shrink-0"
-            title="Attach a photo"
+            className="p-2 text-stone-500 hover:text-emerald-600 dark:text-stone-400 dark:hover:text-emerald-400 rounded-full hover:bg-stone-200/50 dark:hover:bg-stone-800/50 flex-shrink-0"
+            title="Attach photo"
           >
-            <Camera className="w-4 h-4" />
+            <Camera className="w-5 h-5" />
           </button>
 
-          {/* Text Input */}
+          {/* Expanded Textarea */}
           <textarea
             id="chat-input-textarea"
             value={inputText}
@@ -410,24 +410,24 @@ export const ChatView: React.FC<ChatViewProps> = ({
             onKeyDown={handleKeyDown}
             placeholder="Log food, activity, or ask anything..."
             rows={1}
-            className="flex-1 bg-transparent px-2 py-1.5 text-xs sm:text-sm text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-none resize-none max-h-20 leading-tight"
+            className="flex-1 bg-transparent px-1 py-1.5 text-sm sm:text-base text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-none resize-none min-h-[42px] max-h-32 leading-relaxed"
           />
 
-          {/* Send Button */}
+          {/* Gemini-Style Circle Action Button */}
           <button
             id="chat-send-button"
             onClick={handleSend}
             disabled={(!inputText.trim() && !selectedImage) || isLoading}
-            className="p-1.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-30 disabled:hover:bg-emerald-600 text-white rounded-full shadow-xs transition-all flex-shrink-0 active:scale-95"
+            className="p-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-30 disabled:hover:bg-emerald-600 text-white rounded-full shadow-xs flex-shrink-0 active:scale-95"
           >
-            <Send className="w-3.5 h-3.5" />
+            <Send className="w-4 h-4" />
           </button>
         </div>
 
         {/* Micro-footer */}
-        <div className="flex items-center justify-between text-[9px] text-stone-400 dark:text-stone-500 px-2 mt-0.5 pb-0.5">
+        <div className="flex items-center justify-between text-[11px] text-stone-400 dark:text-stone-500 px-3 mt-1.5 pb-1">
           <span>Personal health assistant</span>
-          <span className="hidden sm:inline">Enter to send</span>
+          <span className="hidden sm:inline">Press Enter to send</span>
         </div>
       </div>
     </div>
