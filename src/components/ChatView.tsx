@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import Markdown from 'react-markdown';
 import {
   Send,
@@ -156,7 +156,7 @@ export const ChatView: React.FC<ChatViewProps> = ({
             </div>
           </div>
         ) : (
-          messages.map((msg) => {
+          useMemo(() => messages.map((msg) => {
             const isUser = msg.sender === 'user';
 
             return (
@@ -305,10 +305,10 @@ export const ChatView: React.FC<ChatViewProps> = ({
                 <span className="text-[10px] text-stone-600 mt-1 px-1">
                   {msg.timestamp}
                 </span>
-              </div>
-            );
-          })
-        )}
+            </div>
+      );
+     }, [messages, isLoading])
+    )}
 
         {isLoading && (
           <div className="flex items-center gap-2 p-3 bg-white border border-stone-200 rounded-2xl max-w-[140px] text-xs text-stone-500 shadow-2xs">
@@ -320,15 +320,15 @@ export const ChatView: React.FC<ChatViewProps> = ({
         <div ref={messagesEndRef} />
       </div>
 
-     {/* Input Box Area */}
+    {/* Input Box Area */}
       <div
-        className={`sticky bottom-0 z-20 bg-white dark:bg-[#141A17] border-t border-stone-200 dark:border-stone-800 px-4 pt-2.5 ${
+        className={`sticky bottom-0 z-20 bg-white/85 dark:bg-[#141A17]/90 backdrop-blur-md border-t border-stone-200/80 dark:border-stone-800/80 px-4 pt-3 transition-all duration-200 ease-out ${
           isKeyboardOpen ? 'pb-2' : 'pb-20 md:pb-4'
         }`}
       >
         {/* Pending Duplicate Entry Bar */}
         {pendingDuplicateOffer && (
-          <div className="mb-2 p-2.5 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 rounded-2xl flex items-center justify-between gap-2">
+          <div className="mb-2 p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 rounded-2xl flex items-center justify-between gap-2 shadow-2xs transition-all">
             <div className="flex items-center gap-2 text-xs text-amber-900 dark:text-amber-200">
               <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0" />
               <span className="truncate">
@@ -339,7 +339,7 @@ export const ChatView: React.FC<ChatViewProps> = ({
               <button
                 type="button"
                 onClick={() => onSendMessage('Yes, add it again')}
-                className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg"
+                className="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg shadow-2xs transition-colors flex items-center gap-1"
               >
                 <Check className="w-3.5 h-3.5" />
                 <span>Add</span>
@@ -347,7 +347,7 @@ export const ChatView: React.FC<ChatViewProps> = ({
               <button
                 type="button"
                 onClick={() => onSendMessage('No, cancel')}
-                className="px-2.5 py-1 bg-stone-200 dark:bg-stone-800 hover:bg-stone-300 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 text-xs font-medium rounded-lg"
+                className="px-3 py-1 bg-stone-200 dark:bg-stone-800 hover:bg-stone-300 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 text-xs font-medium rounded-lg transition-colors"
               >
                 Cancel
               </button>
@@ -357,33 +357,33 @@ export const ChatView: React.FC<ChatViewProps> = ({
 
         {/* Selected Image Preview */}
         {selectedImage && (
-          <div className="mb-2 p-2 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl flex items-center justify-between">
-            <div className="flex items-center gap-2">
+          <div className="mb-2.5 p-2 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl flex items-center justify-between transition-all">
+            <div className="flex items-center gap-2.5">
               <img
                 src={selectedImage.previewUrl}
                 alt="Meal preview"
-                className="w-10 h-10 object-cover rounded-lg border border-stone-200 dark:border-stone-700"
+                className="w-12 h-12 object-cover rounded-xl border border-stone-200 dark:border-stone-700"
               />
               <div>
-                <span className="text-xs font-semibold text-stone-800 dark:text-stone-200 block truncate max-w-[180px]">
+                <span className="text-xs font-semibold text-stone-800 dark:text-stone-200 block truncate max-w-[200px]">
                   {selectedImage.file.name}
                 </span>
-                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 block">
+                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 block font-medium">
                   Photo ready to estimate
                 </span>
               </div>
             </div>
             <button
               onClick={() => setSelectedImage(null)}
-              className="p-1 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 rounded-md"
+              className="p-1.5 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 rounded-lg hover:bg-stone-200/50 dark:hover:bg-stone-800/50 transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
         )}
 
-        {/* Gemini-Style Spacious Pill */}
-        <div className="flex items-center gap-2 bg-[#f0f4f1] dark:bg-[#1C2420] border border-stone-300/80 dark:border-stone-700/80 rounded-[28px] px-3 py-2 shadow-xs focus-within:ring-2 focus-within:ring-emerald-500/30 focus-within:border-emerald-600/60">
+        {/* Spacious Gemini Capsule Pill */}
+        <div className="flex items-center gap-2 bg-stone-100/90 dark:bg-[#1E2622]/95 border border-stone-300/80 dark:border-stone-700/70 rounded-[32px] px-3.5 py-2.5 shadow-xs focus-within:ring-2 focus-within:ring-emerald-500/30 focus-within:border-emerald-600/60 transition-all duration-150">
           {/* Photo upload button */}
           <input
             ref={fileInputRef}
@@ -396,13 +396,13 @@ export const ChatView: React.FC<ChatViewProps> = ({
             id="chat-photo-button"
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="p-2 text-stone-500 hover:text-emerald-600 dark:text-stone-400 dark:hover:text-emerald-400 rounded-full hover:bg-stone-200/50 dark:hover:bg-stone-800/50 flex-shrink-0"
+            className="p-2 text-stone-500 hover:text-emerald-600 dark:text-stone-400 dark:hover:text-emerald-400 rounded-full hover:bg-stone-200/70 dark:hover:bg-stone-800/70 transition-all duration-150 flex-shrink-0 active:scale-90"
             title="Attach photo"
           >
             <Camera className="w-5 h-5" />
           </button>
 
-          {/* Expanded Textarea */}
+          {/* Roomy Full-Height Textarea */}
           <textarea
             id="chat-input-textarea"
             value={inputText}
@@ -410,23 +410,23 @@ export const ChatView: React.FC<ChatViewProps> = ({
             onKeyDown={handleKeyDown}
             placeholder="Log food, activity, or ask anything..."
             rows={1}
-            className="flex-1 bg-transparent px-1 py-1.5 text-sm sm:text-base text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-none resize-none min-h-[42px] max-h-32 leading-relaxed"
+            className="flex-1 bg-transparent px-1 py-1 text-sm sm:text-base text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-none resize-none min-h-[48px] max-h-36 leading-normal transition-colors"
           />
 
-          {/* Gemini-Style Circle Action Button */}
+          {/* Fluid Send Button */}
           <button
             id="chat-send-button"
             onClick={handleSend}
             disabled={(!inputText.trim() && !selectedImage) || isLoading}
-            className="p-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-30 disabled:hover:bg-emerald-600 text-white rounded-full shadow-xs flex-shrink-0 active:scale-95"
+            className="p-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-30 disabled:hover:bg-emerald-600 text-white rounded-full shadow-sm flex-shrink-0 active:scale-95 transition-all duration-150"
           >
-            <Send className="w-4 h-4" />
+            <Send className="w-5 h-5" />
           </button>
         </div>
 
         {/* Micro-footer */}
         <div className="flex items-center justify-between text-[11px] text-stone-400 dark:text-stone-500 px-3 mt-1.5 pb-1">
-          <span>Personal health assistant</span>
+          <span>Personal health assistant • Estimates for tracking</span>
           <span className="hidden sm:inline">Press Enter to send</span>
         </div>
       </div>
