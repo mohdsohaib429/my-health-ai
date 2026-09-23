@@ -321,7 +321,7 @@ export const ChatView: React.FC<ChatViewProps> = ({
 
     {/* Input Box Area */}
       <div
-        className={`sticky bottom-0 z-20 bg-white/85 dark:bg-[#141A17]/90 backdrop-blur-md border-t border-stone-200/80 dark:border-stone-800/80 px-4 pt-3 transition-all duration-200 ease-out ${
+        className={`sticky bottom-0 z-20 bg-transparent px-4 pt-2 transition-all duration-200 ease-out pointer-events-none ${
           isKeyboardOpen ? 'pb-2' : 'pb-20 md:pb-4'
         }`}
       >
@@ -382,8 +382,7 @@ export const ChatView: React.FC<ChatViewProps> = ({
         )}
 
         {/* Spacious Gemini Capsule Pill */}
-        <div className="flex items-center gap-2 bg-stone-100/90 dark:bg-[#1E2622]/95 border border-stone-300/80 dark:border-stone-700/70 rounded-[32px] px-3.5 py-2.5 shadow-xs focus-within:ring-2 focus-within:ring-emerald-500/30 focus-within:border-emerald-600/60 transition-all duration-150">
-          {/* Photo upload button */}
+<div className="pointer-events-auto flex items-center gap-2 bg-white/95 dark:bg-[#1A221E] border border-stone-200 dark:border-stone-700/80 rounded-[32px] px-3.5 py-2.5 shadow-lg focus-within:ring-2 focus-within:ring-emerald-500/30 focus-within:border-emerald-600/60 transition-all duration-150">          {/* Photo upload button */}
           <input
             ref={fileInputRef}
             type="file"
