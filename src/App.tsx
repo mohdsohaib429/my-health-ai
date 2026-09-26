@@ -121,7 +121,30 @@ import {
   executeFullDataIntegrityCheck,
 } from './services/dataIntegrityService';
 import { DuplicateOffer } from './types';
+// Prune messages older than 24 hours (Chat UI only — logs & DB are untouched)
+const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
 
+function pruneOldMessages(msgs: ChatMessage[]): ChatMessage[] {
+  if (!Array.isArray(msgs)) return [];
+  const now = Date.now();
+  return msgs.filter((msg) => {
+    // Check if ID contains creation timestamp (e.g. msg-1727345678901)
+    const idMatch = msg.id?.match(/msg-(\d+)/);
+    if (idMatch && idMatch[1]) {
+      const msgTime = parseInt(idMatch[1], 10);
+      if (!isNaN(msgTime) && msgTime > 0) {
+        return now - msgTime < TWENTY_FOUR_HOURS_MS;
+      }
+    }
+    // Fallback: If timestamp is a parseable date string
+    const parsedTime = Date.parse(msg.timestamp);
+    if (!isNaN(parsedTime) && parsedTime > 0) {
+      return now - parsedTime < TWENTY_FOUR_HOURS_MS;
+    }
+    // If no epoch timestamp can be extracted, keep it
+    return true;
+  });
+}
 export default function App() {
   // Auth state
   const [user, setUser] = useState<User | null>(null);
@@ -241,6 +264,9 @@ export default function App() {
 
   // Chat State
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  useEffect(() => {
+    setMessages((prev) => pruneOldMessages(prev));
+  }, []);
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [pendingOfferToDb, setPendingOfferToDb] = useState<FoodDatabaseItem[] | null>(null);
   const [pendingDuplicateOffer, setPendingDuplicateOffer] = useState<DuplicateOffer | null>(null);
@@ -432,7 +458,7 @@ export default function App() {
       setProgressEntries(userDataset.progressEntries);
       setSelectedSheet(userDataset.selectedSheet);
       setSheetTabs(userDataset.sheetTabs);
-      setMessages(userDataset.messages);
+      setMessages(pruneOldMessages(userDataset.messages));
 
       setUser(result.user);
       setToken(result.accessToken);
@@ -540,7 +566,7 @@ export default function App() {
     setProgressEntries(primaryDataset.progressEntries);
     setSelectedSheet(primaryDataset.selectedSheet);
     setSheetTabs(primaryDataset.sheetTabs);
-    setMessages(primaryDataset.messages);
+    setMessages(pruneOldMessages(primaryDataset.messages));
     setAuthNotice({
       type: 'info',
       message: 'Signed out.',
@@ -566,7 +592,7 @@ export default function App() {
           setProgressEntries(userDataset.progressEntries);
           setSelectedSheet(userDataset.selectedSheet);
           setSheetTabs(userDataset.sheetTabs);
-          setMessages(userDataset.messages);
+          setMessages(pruneOldMessages(userDataset.messages));
 
           if (userDataset.selectedSheet && currentToken) {
             await syncSpreadsheetData(currentToken, userDataset.selectedSheet.id);
@@ -596,6 +622,7 @@ export default function App() {
         setProgressEntries(primaryDataset.progressEntries);
         setSelectedSheet(null);
         setSheetTabs([]);
+        setMessages(pruneOldMessages(primaryDataset.messages));
       }
     );
   }, [syncSpreadsheetData]);
