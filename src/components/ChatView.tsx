@@ -166,17 +166,77 @@ export const ChatView: React.FC<ChatViewProps> = ({
               >
                 {/* Bubble */}
                 <div
-                  className={`max-w-[90%] rounded-3xl p-5 text-sm leading-relaxed ${
-                    isUser
-                      ? 'bg-stone-900 dark:bg-emerald-700 text-white rounded-br-2xl'
-                      : 'bg-white text-stone-900 border border-stone-200 shadow-2xs rounded-bl-2xl'
-                  }`}
+                  className={`max-w-[90%] rounded-3xl p-4 sm:p-5 text-sm leading-relaxed ${
+             isUser
+            ? 'bg-stone-900 dark:bg-emerald-700 text-white rounded-br-2xl'
+           : 'bg-white dark:bg-[#1A221E] text-stone-900 dark:text-stone-100 border border-stone-200 dark:border-stone-800/80 shadow-2xs rounded-bl-2xl'
+                }`}
                 >
                   {isUser ? (
                     <p className="whitespace-pre-wrap text-white">{msg.text}</p>
                   ) : (
-                    <div className="prose prose-sm prose-stone max-w-none prose-p:my-2 prose-ul:my-2 prose-li:my-1">
-                      <Markdown>{msg.text}</Markdown>
+                    <div className="prose prose-sm dark:prose-invert max-w-none space-y-3 leading-relaxed text-stone-800 dark:text-stone-200">
+                      <Markdown
+                        components={{
+                          // Headings with clean top/bottom spacing
+                          h1: ({ children }) => (
+                            <h1 className="text-base font-extrabold text-stone-900 dark:text-stone-100 mt-2 mb-2 pb-1 border-b border-stone-200 dark:border-stone-800">
+                              {children}
+                            </h1>
+                          ),
+                          h2: ({ children }) => (
+                            <h2 className="text-sm font-bold text-stone-900 dark:text-stone-100 mt-3 mb-1.5 flex items-center gap-1.5">
+                              {children}
+                            </h2>
+                          ),
+                          h3: ({ children }) => (
+                            <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 mt-2.5 mb-1">
+                              {children}
+                            </h3>
+                          ),
+                          // Paragraphs with comfortable breathing room
+                          p: ({ children }) => (
+                            <p className="my-1.5 text-xs sm:text-sm leading-relaxed whitespace-pre-line">
+                              {children}
+                            </p>
+                          ),
+                          // Lists formatted with indentation and bullet points
+                          ul: ({ children }) => (
+                            <ul className="my-2 space-y-1.5 pl-4 list-disc text-xs sm:text-sm text-stone-700 dark:text-stone-300">
+                              {children}
+                            </ul>
+                          ),
+                          ol: ({ children }) => (
+                            <ol className="my-2 space-y-1.5 pl-4 list-decimal text-xs sm:text-sm text-stone-700 dark:text-stone-300">
+                              {children}
+                            </ol>
+                          ),
+                          li: ({ children }) => (
+                            <li className="leading-relaxed pl-1">
+                              {children}
+                            </li>
+                          ),
+                          // Crisp bold tags
+                          strong: ({ children }) => (
+                            <strong className="font-semibold text-stone-900 dark:text-white">
+                              {children}
+                            </strong>
+                          ),
+                          // Horizontal dividers
+                          hr: () => (
+                            <hr className="my-3 border-stone-200 dark:border-stone-800" />
+                          ),
+                        }}
+                      >
+                        {/* Converts inline bullets and single breaks into clean markdown lines */}
+                        {msg.text
+                          ? msg.text
+                              // Turn inline ' • ' or '\n• ' into proper Markdown list syntax
+                              .replace(/(?:^|\n|\s)•\s*/g, '\n\n* ')
+                              // Ensure double newlines for titles/sections so they don't fold together
+                              .replace(/([^\n])\n([^\n*#\d])/g, '$1\n\n$2')
+                          : ''}
+                      </Markdown>
                     </div>
                   )}
 
